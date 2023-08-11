@@ -1,29 +1,51 @@
 using System;
 using UnityEngine;
 
-namespace Instrumentum
+namespace Instrumentum.UI
 {
-    [Serializable]
-    public struct PreloadedObjects
-    {
-        public string Name;
-        public GameObject Prefab;
-    }
-    
     public class MainEntryPoint : SingletonBehaviour<MainEntryPoint>
     {
-        [SerializeField] private PreloadedObjects[] Preloaders;
+        [SerializeField] private UIRoot _uiRootPrefab;
+        [SerializeField] private InputController _inputControllerPrefab;
+        [SerializeField] private GlobalResources _globalResources;
+        
+        private UIRoot _uiRootInstance;
+        private InputController _inputControllerInstance;
         
         public override void Instantiate()
         {
             DontDestroyOnLoad(gameObject);
 
-            foreach (var preloader in Preloaders)
+            if (!_uiRootPrefab)
             {
-                var go = Instantiate(preloader.Prefab);
-                go.name = $"[{preloader.Name}]";
-                DontDestroyOnLoad(go);
+                throw new ArgumentNullException(nameof(_uiRootPrefab));
             }
+
+            if (!_inputControllerPrefab)
+            {
+                throw new ArgumentNullException(nameof(_inputControllerPrefab));
+            }
+            
+            if (!_globalResources)
+            {
+                throw new ArgumentNullException(nameof(_globalResources));
+            }
+            
+            _inputControllerInstance = Instantiate(_inputControllerPrefab);
+            var inputGameObject = _inputControllerInstance.gameObject;
+            inputGameObject.name = "[Input Controller]";
+            DontDestroyOnLoad(inputGameObject);
+            
+            var globalResources = Instantiate(_globalResources);
+            globalResources.name = "[Global Resources]";
+            DontDestroyOnLoad(globalResources);
+
+            _uiRootInstance = Instantiate(_uiRootPrefab);
+            var uiRoot = _uiRootInstance.gameObject;
+            uiRoot.name = "[UI Root]";
+            DontDestroyOnLoad(uiRoot);
+            
+            _uiRootInstance.OnStart(_inputControllerInstance);
         }
     }
 }

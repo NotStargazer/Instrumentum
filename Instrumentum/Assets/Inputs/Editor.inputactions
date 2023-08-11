@@ -1,0 +1,140 @@
+{
+    "name": "Editor",
+    "maps": [
+        {
+            "name": "Editor",
+            "id": "d6762c68-3a1d-4f83-8e12-e4a29ebbf920",
+            "actions": [
+                {
+                    "name": "Qauntization Down",
+                    "type": "Button",
+                    "id": "70471af8-7d9b-4471-aca0-cf7b504924f2",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Qauntization Up",
+                    "type": "Button",
+                    "id": "a07dad96-e3fe-465d-8379-ae884bf8a25e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Mouse Move",
+                    "type": "Value",
+                    "id": "a2c04098-19e5-4ec2-bbd6-7d71eb8e9813",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Click",
+                    "type": "Button",
+                    "id": "89ca8bfc-2e38-4f40-ae3e-4e591d745135",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Right Click",
+                    "type": "Button",
+                    "id": "57ad2652-2d1e-4357-ad6d-ac28f80e4626",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Toggle Play",
+                    "type": "Button",
+                    "id": "43f19488-31c9-4286-b64f-4f7544c5e6e3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4efe3b17-608a-4619-ba26-cbd3df20ccdf",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Editor",
+                    "action": "Qauntization Down",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "429c05b2-cfcb-44a4-bc1c-88b6b70e0fa5",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Editor",
+                    "action": "Mouse Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dbb81c5e-7f57-4e24-88b6-d4f073ee8089",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Editor",
+                    "action": "Qauntization Up",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f1cd369f-c10b-459e-96c5-43f8ddc173f2",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Editor",
+                    "action": "Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cfec9ecf-89fe-4ee6-9e73-1662da3480ae",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Editor",
+                    "action": "Right Click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4d2a942a-5198-4fb5-a4fd-8d96deed0032",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Editor",
+                    "action": "Toggle Play",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Editor",
+            "bindingGroup": "Editor",
+            "devices": []
+        }
+    ]
+}

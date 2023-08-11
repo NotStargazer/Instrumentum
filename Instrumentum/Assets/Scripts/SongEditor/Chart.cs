@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Instrumentum
+namespace Instrumentum.SongEditor
 {
     public class Chart
     {

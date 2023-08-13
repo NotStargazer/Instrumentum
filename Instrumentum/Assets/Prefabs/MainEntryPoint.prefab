@@ -30,7 +30,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-4661090503265462327
 MonoBehaviour:
@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b2b1c37ba9d5e54ba433bd446df725a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _singletonName: MainEntryPoint
+  _singletonName: Main Entry Point
   _destroyOnLevelChange: 0
-  Preloaders: []
+  _uiRootPrefab: {fileID: 6317689146790813693, guid: 7767b90b1e0d5ef4ea82c0a9a90668a0, type: 3}
+  _inputControllerPrefab: {fileID: 9176868271876805217, guid: a0347ac6588398b4fba2843adb1c693d, type: 3}
+  _globalResources: {fileID: -3587136698411196062, guid: ab9f241062c033e4992385d2677e9220, type: 3}

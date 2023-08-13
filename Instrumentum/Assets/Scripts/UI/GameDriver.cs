@@ -33,9 +33,9 @@ namespace Instrumentum.UI
             };
             
             _currentDriverState = GlobalResources.Instance.InitialState;
-            var state = _states[_currentDriverState];
-            state.OnStateEnter(_uiRoot, null);
-            _input.EditorActions.SetCallbacks(state);
+            // var state = _states[_currentDriverState];
+            // state.OnStateEnter(_uiRoot, null);
+            // _input.EditorActions.SetCallbacks(state);
         }
 
         internal void OnChangeState(DriverState nextState)

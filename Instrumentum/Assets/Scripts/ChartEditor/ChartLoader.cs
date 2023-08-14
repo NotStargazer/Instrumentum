@@ -7,8 +7,14 @@ namespace Instrumentum.ChartEditor
 {
     public static class ChartLoader
     {
+        private static readonly int TRACK_TOKEN = '[';
+        private static readonly int TRACK_CLOSE_TOKEN = ']';
+        private static readonly int SCOPE_TOKEN = '{';
+        private static readonly int SCOPE_CLOSE_TOKEN = '}';
+        private static readonly int PARSE_TOKEN = '=';
+
         private static string CURRENT_CHART;
-        
+
         public static Chart Load()
         {
             var file = StandaloneFileBrowser.OpenFilePanel(
@@ -20,124 +26,192 @@ namespace Instrumentum.ChartEditor
             if (file.Length > 0)
             {
                 CURRENT_CHART = file[0];
-                var textChart = File.ReadAllLines(CURRENT_CHART);
-                return ParseInstruManiaChart(textChart);
+                return ParseInstruManiaChart(CURRENT_CHART);
             }
 
             return null;
         }
-        
+
         public static void Save(Chart chart, bool saveAs)
         {
-            
         }
 
-        private static Chart ParseInstruManiaChart(string[] textChart)
+        private static Chart ParseInstruManiaChart(string chartPath)
         {
             var chart = new Chart();
 
-            var lineIndex = 0;
+            using (var sr = new StreamReader(chartPath))
+            {
+                var currentTrack = string.Empty;
 
-            var dataTrack = GetTrack(ref lineIndex, textChart, "[Song]");
-            var syncTrack =  GetTrack(ref lineIndex, textChart, "[Sync]");
-            var eventTrack = GetTrack(ref lineIndex, textChart, "[Event]");
-            var noteTrack =  GetTrack(ref lineIndex, textChart, "[Note]");
+                while (!sr.EndOfStream)
+                {
+                    var token = sr.Read();
 
-            //Parse Song Data
-            if (ParseSongData(textChart, dataTrack, chart)) return null;
-            if (ParseSyncData(textChart, syncTrack, chart)) return null;
-            if (ParseEventData(textChart, eventTrack, chart)) return null;
-            if (ParseNoteData(textChart, noteTrack, chart)) return null;
-            
+                    if (token == TRACK_TOKEN)
+                    {
+                        token = sr.Read();
+                        do
+                        {
+                            currentTrack += (char)token;
+                            token = sr.Read();
+                            if (sr.EndOfStream)
+                            {
+                                return null;
+                            }
+                        } while (token != TRACK_CLOSE_TOKEN);
+                    }
+
+                    if (token == SCOPE_TOKEN)
+                    {
+                        switch (currentTrack)
+                        {
+                            case "Song":
+                                if (ParseSongData(sr, chart))
+                                    return null;
+                                break;
+                            case "Sync":
+                                if (ParseSyncData(sr, chart))
+                                    return null;
+                                break;
+                            case "Event":
+                                if (ParseEventData(sr, chart))
+                                    return null;
+                                break;
+                            case "Note":
+                                if (ParseNoteData(sr, chart))
+                                    return null;
+                                break;
+                        }
+
+                        currentTrack = string.Empty;
+                    }
+                }
+            }
+
             return chart;
         }
 
-        private static bool ParseSongData(string[] textChart, LineRange dataTrack, Chart chart)
+        private static bool ParseSongData(StreamReader sr, Chart chart)
         {
-            for (var songI = dataTrack.StartLine; songI <= dataTrack.EndLine; songI++)
+            var token = sr.Read();
+            var dataPoint = string.Empty;
+            var data = string.Empty;
+            while (token != SCOPE_CLOSE_TOKEN)
             {
-                var line = textChart[songI].Trim();
-                if (line.StartsWith("Title"))
+                while (!sr.EndOfStream)
                 {
-                    chart.SongTitle = line.Split('=')[1].Trim();
-                    continue;
+                    token = sr.Read();
+
+                    if (token == SCOPE_CLOSE_TOKEN)
+                    {
+                        return false;
+                    }
+                    
+                    if (token == PARSE_TOKEN)
+                    {
+                        dataPoint = dataPoint.Trim();
+                        data = sr.ReadLine()?.Trim();
+                        break;
+                    }
+
+                    dataPoint += (char)token;
                 }
 
-                if (line.StartsWith("Sub Title"))
+                switch (dataPoint)
                 {
-                    chart.SongSubTitle = line.Split('=')[1].Trim();
-                    continue;
+                    case "Title":
+                        chart.SongTitle = data;
+                        break;
+                    case "Sub Title":
+                        chart.SongSubTitle = data;
+                        break;
+                    case "Artist":
+                        chart.SongArtist = data;
+                        break;
+                    case "Sub Artist":
+                        chart.SongArtist = data;
+                        break;
+                    case "Genre":
+                        chart.Genre = data;
+                        break;
+                    case "Song File":
+                        chart.SongFileName = data;
+                        break;
+                    case "Jacket File":
+                        chart.JacketFileName = data;
+                        break;
+                    case "BPM":
+                        if (!FastFloatParser.TryParseFloat(data, out var bpm))
+                            return true;
+                        chart.Bpm = bpm;
+                        break;
+                    case "Time Signature":
+                        if (data != null)
+                        {
+                            var rawTimeSignature = data.Split('/');
+                            var timeSignature = new TimeSignature();
+                            if (!IntParseFast(rawTimeSignature[0], out timeSignature.Upper))
+                                return true;
+
+                            if (!IntParseFast(rawTimeSignature[1], out timeSignature.Lower))
+                                return true;
+
+                            chart.TimeSignature = timeSignature;
+                        }
+                        break;
                 }
 
-                if (line.StartsWith("Artist"))
-                {
-                    chart.SongArtist = line.Split('=')[1].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("Sub Artist"))
-                {
-                    chart.SongSubArtist = line.Split('=')[1].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("Genre"))
-                {
-                    chart.Genre = line.Split('=')[1].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("Song File"))
-                {
-                    chart.SongFileName = line.Split('=')[1].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("Jacket File"))
-                {
-                    chart.JacketFileName = line.Split('=')[1].Trim();
-                    continue;
-                }
-
-                if (line.StartsWith("BPM"))
-                {
-                    var bpm = line.Split('=')[1].Trim();
-                    if (!FastFloatParser.TryParseFloat(bpm, out chart.Bpm))
-                        return true;
-                    continue;
-                }
-
-                if (line.StartsWith("Time Signature"))
-                {
-                    var ts = line.Split('=')[1].Trim().Split('/');
-                    var timeSignature = new TimeSignature();
-                    if (!IntParseFast(ts[0], out timeSignature.Upper))
-                        return true;
-
-                    if (!IntParseFast(ts[1], out timeSignature.Lower))
-                        return true;
-
-                    chart.TimeSignature = timeSignature;
-                }
+                data = string.Empty;
+                dataPoint = string.Empty;
             }
 
             return false;
         }
-        
-        private static bool ParseSyncData(string[] textChart, LineRange syncTrack, Chart chart)
-        {
-            for (var songS = syncTrack.StartLine; songS <= syncTrack.EndLine; songS++)
-            {
-                var line = textChart[songS].Split('=');
-                if (!IntParseFast(line[0].Trim(), out var time))
-                    return true;
-                var sync = line[1].Trim();
-                
-                if (sync.StartsWith('B'))
-                {
-                    var bpmString = sync.Remove(0, 1).TrimStart();
 
-                    if (!FastFloatParser.TryParseFloat(bpmString, out var bpmValue))
+        private static bool ParseSyncData(StreamReader sr, Chart chart)
+        {
+            var token = sr.Read();
+            var time = 0;
+            var dataPoint = string.Empty;
+            var rawData = string.Empty;
+            while (token != SCOPE_CLOSE_TOKEN)
+            {                
+                while (!sr.EndOfStream)
+                {
+                    token = sr.Read();
+
+                    if (token == SCOPE_CLOSE_TOKEN)
+                    {
+                        return false;
+                    }
+                    
+                    if (token == PARSE_TOKEN)
+                    {
+                        if (!IntParseFast(dataPoint.Trim(), out time))
+                            return true;
+                        rawData = sr.ReadLine()?.Trim();
+                        break;
+                    }
+
+                    dataPoint += (char)token;
+                }
+
+                if (rawData == null)
+                {
+                    continue;
+                }
+                
+                var dataSplit = rawData.Split();
+                var identifier = dataSplit[0];
+                var data = dataSplit[1];
+                
+                rawData = string.Empty;
+                dataPoint = string.Empty;
+
+                if (identifier == "B")
+                {
+                    if (!FastFloatParser.TryParseFloat(data, out var bpmValue))
                         return true;
 
                     chart.BpmChanges.Add(new Bpm(time, bpmValue));
@@ -145,10 +219,9 @@ namespace Instrumentum.ChartEditor
                     continue;
                 }
 
-                if (sync.StartsWith('T'))
+                if (identifier == "T")
                 {
-                    var tsString = sync.Remove(0, 1).TrimStart();
-                    var ts = tsString.Split('/');
+                    var ts = data.Split('/');
 
                     if (!IntParseFast(ts[0], out var upper))
                         return true;
@@ -163,80 +236,117 @@ namespace Instrumentum.ChartEditor
             return false;
         }
 
-        private static bool ParseEventData(string[] textChart, LineRange eventTrack, Chart chart)
+        private static bool ParseEventData(StreamReader sr, Chart chart)
         {
-            for (var songE = eventTrack.StartLine; songE <= eventTrack.EndLine; songE++)
+            var token = sr.Read();
+            var time = 0;
+            var dataPoint = string.Empty;
+            var rawData = string.Empty;
+            while (token == SCOPE_CLOSE_TOKEN)
             {
-                var line = textChart[songE].Split('=');
-                if (!IntParseFast(line[0].TrimStart(), out var time))
-                    return true;
-                var chartEvent = line[1].Trim();
-                
-                if (chartEvent.StartsWith('S'))
-                { }
-
-                if (chartEvent.StartsWith('E'))
-                { }
-            }
-            
-            return false;
-        }
-        
-        private static bool ParseNoteData(string[] textChart, LineRange noteTrack, Chart chart)
-        {
-            for (var songN = noteTrack.StartLine; songN <= noteTrack.EndLine; songN++)
-            {
-                var line = textChart[songN].Split('=');
-                if (!IntParseFast(line[0].Trim(), out var time))
-                    return true;
-                var noteString = line[1].Trim();
-
-                if (noteString.StartsWith('N'))
+                while (!sr.EndOfStream)
                 {
-                    var noteData = noteString.Split();
-                    if (!IntParseFast(noteData[1], out var id))
-                        return true;
-                    if (!IntParseFast(noteData[2], out var mod))
-                        return true;
-                    if (!IntParseFast(noteData[3], out var ptrId))
-                        return true;
-                    if (!IntParseFast(noteData[4], out var ptrTime))
-                        return true;
+                    token = sr.Read();
 
-                    chart.Notes.Add(new Note(id, mod, new NotePtr(ptrId, ptrTime)));
-                }
-            }
-            
-            return false;
-        }
-
-        private static LineRange GetTrack(ref int lineIndex, string[] chart, string trackName)
-        {
-            var track = new LineRange();
-            for (; lineIndex < chart.Length; lineIndex++)
-            {
-                if (chart[lineIndex].StartsWith(trackName))
-                {
-                    track.StartLine = lineIndex + 2;
-                    do
+                    if (token == SCOPE_CLOSE_TOKEN)
                     {
-                        lineIndex++;
-                    } while (!chart[lineIndex].StartsWith('}'));
+                        return false;
+                    }
 
-                    track.EndLine = lineIndex - 1;
-                    break;
+                    if (token == PARSE_TOKEN)
+                    {
+                        if (!IntParseFast(dataPoint.Trim(), out time))
+                            return true;
+                        rawData = sr.ReadLine()?.Trim();
+                        break;
+                    }
+
+                    dataPoint += (char)token;
+                }
+
+                if (rawData == null)
+                {
+                    continue;
+                }
+
+                var dataSplit = rawData.Split();
+                var identifier = dataSplit[0];
+                var data = dataSplit[1];
+
+                rawData = string.Empty;
+                dataPoint = string.Empty;
+
+                if (identifier == "S")
+                {
+                }
+
+                if (identifier == "C")
+                {
                 }
             }
 
-            return track;
+            return false;
         }
-        
-        private struct LineRange
+
+        private static bool ParseNoteData(StreamReader sr, Chart chart)
         {
-            public int StartLine;
-            public int EndLine;
+            var token = sr.Read();
+            var time = 0;
+            var dataPoint = string.Empty;
+            var rawData = string.Empty;
+            while (token != SCOPE_CLOSE_TOKEN)
+            {
+                while (!sr.EndOfStream)
+                {
+                    token = sr.Read();
+
+                    if (token == SCOPE_CLOSE_TOKEN)
+                    {
+                        return false;
+                    }
+
+                    if (token == PARSE_TOKEN)
+                    {
+                        if (!IntParseFast(dataPoint.Trim(), out time))
+                            return true;
+                        rawData = sr.ReadLine()?.Trim();
+                        break;
+                    }
+
+                    dataPoint += (char)token;
+                }
+
+                if (rawData == null)
+                {
+                    continue;
+                }
+
+                var dataSplit = rawData.Split();
+                var identifier = dataSplit[0];
+                var nId = dataSplit[1];
+                var nMod = dataSplit[2];
+                var nPtrId = dataSplit[3];
+                var nPtrTime = dataSplit[4];
+                    
+                rawData = string.Empty;
+                dataPoint = string.Empty;
+                    
+                if (identifier == "N")
+                {
+                    if (!IntParseFast(nId.Trim(), out var id))
+                        return true;
+                    if (!IntParseFast(nMod.Trim(), out var mod))
+                        return true;
+                    if (!IntParseFast(nPtrId.Trim(), out var ptrId))
+                        return true;
+                    if (!IntParseFast(nPtrTime.Trim(), out var ptrTime))
+                        return true;
+                    chart.Notes.Add(new Note(time, id, mod, new NotePtr(ptrTime, ptrId)));
+                }
+            }
+            return false;
         }
-        
+
         private static bool IntParseFast(string s, out int result)
         {
             int value = 0;
@@ -249,8 +359,10 @@ namespace Instrumentum.ChartEditor
                     result = -1;
                     return false;
                 }
+
                 value = 10 * value + (c - 48);
             }
+
             result = value;
             return true;
         }

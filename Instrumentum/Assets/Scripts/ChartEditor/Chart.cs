@@ -25,13 +25,15 @@ namespace Instrumentum.ChartEditor
 
     public struct Note
     {
-        public Note(int id, int mod, NotePtr ptr)
+        public Note(int time, int id, int mod, NotePtr ptr)
         {
+            Time = time;
             Id = id;
             Mod = mod;
             Ptr = ptr;
         }
-        
+
+        public int Time;
         public int Id;
         public int Mod;
         public NotePtr Ptr;

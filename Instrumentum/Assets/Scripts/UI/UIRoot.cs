@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Instrumentum.UI
 {
@@ -14,7 +15,7 @@ namespace Instrumentum.UI
 
         [SerializeField] private Camera _uiCamera;
         
-        private GameDriver _gameDriver;
+        private Driver _driver;
 
         private void Awake()
         {
@@ -26,7 +27,7 @@ namespace Instrumentum.UI
 
         public void OnStart(InputController inputController)
         {
-            _gameDriver = new GameDriver(this, inputController);
+            _driver = new Driver(this, inputController);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Instrumentum.UI
         public void OnStateExit(DriverState to);
     }
 
-    public class GameDriver
+    public class Driver
     {
         private UIRoot _uiRoot;
         private InputController _input;
@@ -22,20 +22,20 @@ namespace Instrumentum.UI
 
         private DriverState _currentDriverState;
 
-        internal GameDriver(UIRoot ui, InputController input)
+        internal Driver(UIRoot ui, InputController input)
         {
             _uiRoot = ui;
             _input = input;
 
             _states = new Dictionary<DriverState, IDriverState>
             {
-                
+                { DriverState.NotePlacement, new DriverState_NotePlacement() }
             };
             
             _currentDriverState = GlobalResources.Instance.InitialState;
-            // var state = _states[_currentDriverState];
-            // state.OnStateEnter(_uiRoot, null);
-            // _input.EditorActions.SetCallbacks(state);
+            var state = _states[_currentDriverState];
+            state.OnStateEnter(_uiRoot, null);
+            _input.EditorActions.SetCallbacks(state);
         }
 
         internal void OnChangeState(DriverState nextState)

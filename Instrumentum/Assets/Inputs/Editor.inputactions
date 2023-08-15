@@ -6,7 +6,7 @@
             "id": "d6762c68-3a1d-4f83-8e12-e4a29ebbf920",
             "actions": [
                 {
-                    "name": "Qauntization Down",
+                    "name": "Quantization Down",
                     "type": "Button",
                     "id": "70471af8-7d9b-4471-aca0-cf7b504924f2",
                     "expectedControlType": "Button",
@@ -15,7 +15,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Qauntization Up",
+                    "name": "Quantization Up",
                     "type": "Button",
                     "id": "a07dad96-e3fe-465d-8379-ae884bf8a25e",
                     "expectedControlType": "Button",
@@ -68,7 +68,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Editor",
-                    "action": "Qauntization Down",
+                    "action": "Quantization Down",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -90,7 +90,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Editor",
-                    "action": "Qauntization Up",
+                    "action": "Quantization Up",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

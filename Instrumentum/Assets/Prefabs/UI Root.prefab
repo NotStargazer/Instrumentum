@@ -118,6 +118,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _uiCamera: {fileID: 8347255161611943570}
+  _chartEditorPrefab: {fileID: 8406885412864284101, guid: 1980040a446685c4b93c84798d0c525d, type: 3}
 --- !u!114 &567732053335362718
 MonoBehaviour:
   m_ObjectHideFlags: 0

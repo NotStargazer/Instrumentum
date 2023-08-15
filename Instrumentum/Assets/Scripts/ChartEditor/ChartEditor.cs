@@ -1,15 +1,16 @@
 using System;
+using Instrumentum.UI;
 using UnityEngine;
 
 namespace Instrumentum.ChartEditor
 {
-    public class ChartEditor : MonoBehaviour
+    public class ChartEditor : SingletonBehaviour<ChartEditor>
     {
         private Chart _currentChart;
-        
-        private void Awake()
+
+        public override void Instantiate()
         {
-            ChartLoader.Load();
+            _currentChart = ChartLoader.Load();
         }
     }
 }

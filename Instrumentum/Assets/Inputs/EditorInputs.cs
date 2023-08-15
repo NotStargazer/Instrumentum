@@ -30,7 +30,7 @@ namespace Instrumentum.UI
             ""id"": ""d6762c68-3a1d-4f83-8e12-e4a29ebbf920"",
             ""actions"": [
                 {
-                    ""name"": ""Qauntization Down"",
+                    ""name"": ""Quantization Down"",
                     ""type"": ""Button"",
                     ""id"": ""70471af8-7d9b-4471-aca0-cf7b504924f2"",
                     ""expectedControlType"": ""Button"",
@@ -39,7 +39,7 @@ namespace Instrumentum.UI
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Qauntization Up"",
+                    ""name"": ""Quantization Up"",
                     ""type"": ""Button"",
                     ""id"": ""a07dad96-e3fe-465d-8379-ae884bf8a25e"",
                     ""expectedControlType"": ""Button"",
@@ -92,7 +92,7 @@ namespace Instrumentum.UI
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Editor"",
-                    ""action"": ""Qauntization Down"",
+                    ""action"": ""Quantization Down"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -114,7 +114,7 @@ namespace Instrumentum.UI
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Editor"",
-                    ""action"": ""Qauntization Up"",
+                    ""action"": ""Quantization Up"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -164,8 +164,8 @@ namespace Instrumentum.UI
 }");
             // Editor
             m_Editor = asset.FindActionMap("Editor", throwIfNotFound: true);
-            m_Editor_QauntizationDown = m_Editor.FindAction("Qauntization Down", throwIfNotFound: true);
-            m_Editor_QauntizationUp = m_Editor.FindAction("Qauntization Up", throwIfNotFound: true);
+            m_Editor_QuantizationDown = m_Editor.FindAction("Quantization Down", throwIfNotFound: true);
+            m_Editor_QuantizationUp = m_Editor.FindAction("Quantization Up", throwIfNotFound: true);
             m_Editor_MouseMove = m_Editor.FindAction("Mouse Move", throwIfNotFound: true);
             m_Editor_Click = m_Editor.FindAction("Click", throwIfNotFound: true);
             m_Editor_RightClick = m_Editor.FindAction("Right Click", throwIfNotFound: true);
@@ -231,8 +231,8 @@ namespace Instrumentum.UI
         // Editor
         private readonly InputActionMap m_Editor;
         private List<IEditorActions> m_EditorActionsCallbackInterfaces = new List<IEditorActions>();
-        private readonly InputAction m_Editor_QauntizationDown;
-        private readonly InputAction m_Editor_QauntizationUp;
+        private readonly InputAction m_Editor_QuantizationDown;
+        private readonly InputAction m_Editor_QuantizationUp;
         private readonly InputAction m_Editor_MouseMove;
         private readonly InputAction m_Editor_Click;
         private readonly InputAction m_Editor_RightClick;
@@ -241,8 +241,8 @@ namespace Instrumentum.UI
         {
             private @EditorInputs m_Wrapper;
             public EditorActions(@EditorInputs wrapper) { m_Wrapper = wrapper; }
-            public InputAction @QauntizationDown => m_Wrapper.m_Editor_QauntizationDown;
-            public InputAction @QauntizationUp => m_Wrapper.m_Editor_QauntizationUp;
+            public InputAction @QuantizationDown => m_Wrapper.m_Editor_QuantizationDown;
+            public InputAction @QuantizationUp => m_Wrapper.m_Editor_QuantizationUp;
             public InputAction @MouseMove => m_Wrapper.m_Editor_MouseMove;
             public InputAction @Click => m_Wrapper.m_Editor_Click;
             public InputAction @RightClick => m_Wrapper.m_Editor_RightClick;
@@ -256,12 +256,12 @@ namespace Instrumentum.UI
             {
                 if (instance == null || m_Wrapper.m_EditorActionsCallbackInterfaces.Contains(instance)) return;
                 m_Wrapper.m_EditorActionsCallbackInterfaces.Add(instance);
-                @QauntizationDown.started += instance.OnQauntizationDown;
-                @QauntizationDown.performed += instance.OnQauntizationDown;
-                @QauntizationDown.canceled += instance.OnQauntizationDown;
-                @QauntizationUp.started += instance.OnQauntizationUp;
-                @QauntizationUp.performed += instance.OnQauntizationUp;
-                @QauntizationUp.canceled += instance.OnQauntizationUp;
+                @QuantizationDown.started += instance.OnQuantizationDown;
+                @QuantizationDown.performed += instance.OnQuantizationDown;
+                @QuantizationDown.canceled += instance.OnQuantizationDown;
+                @QuantizationUp.started += instance.OnQuantizationUp;
+                @QuantizationUp.performed += instance.OnQuantizationUp;
+                @QuantizationUp.canceled += instance.OnQuantizationUp;
                 @MouseMove.started += instance.OnMouseMove;
                 @MouseMove.performed += instance.OnMouseMove;
                 @MouseMove.canceled += instance.OnMouseMove;
@@ -278,12 +278,12 @@ namespace Instrumentum.UI
 
             private void UnregisterCallbacks(IEditorActions instance)
             {
-                @QauntizationDown.started -= instance.OnQauntizationDown;
-                @QauntizationDown.performed -= instance.OnQauntizationDown;
-                @QauntizationDown.canceled -= instance.OnQauntizationDown;
-                @QauntizationUp.started -= instance.OnQauntizationUp;
-                @QauntizationUp.performed -= instance.OnQauntizationUp;
-                @QauntizationUp.canceled -= instance.OnQauntizationUp;
+                @QuantizationDown.started -= instance.OnQuantizationDown;
+                @QuantizationDown.performed -= instance.OnQuantizationDown;
+                @QuantizationDown.canceled -= instance.OnQuantizationDown;
+                @QuantizationUp.started -= instance.OnQuantizationUp;
+                @QuantizationUp.performed -= instance.OnQuantizationUp;
+                @QuantizationUp.canceled -= instance.OnQuantizationUp;
                 @MouseMove.started -= instance.OnMouseMove;
                 @MouseMove.performed -= instance.OnMouseMove;
                 @MouseMove.canceled -= instance.OnMouseMove;
@@ -324,8 +324,8 @@ namespace Instrumentum.UI
         }
         public interface IEditorActions
         {
-            void OnQauntizationDown(InputAction.CallbackContext context);
-            void OnQauntizationUp(InputAction.CallbackContext context);
+            void OnQuantizationDown(InputAction.CallbackContext context);
+            void OnQuantizationUp(InputAction.CallbackContext context);
             void OnMouseMove(InputAction.CallbackContext context);
             void OnClick(InputAction.CallbackContext context);
             void OnRightClick(InputAction.CallbackContext context);
